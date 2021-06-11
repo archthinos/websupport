@@ -1,0 +1,16 @@
+{
+    "name": "martin/websupport",
+    "authors": [
+        {
+            "name": "Martin Pohorelsky",
+            "email": "pohorelskymartin@gmail.com"
+        }
+    ],
+    "autoload": {
+      "psr-4": {
+          "App\\": "app/",
+          "Core\\": "src/"
+      }
+    },
+    "require": {}
+}

@@ -1,0 +1,7 @@
+<?php 
+    return [
+        'API_URL' => 'https://rest.websupport.sk',
+        'API_KEY' => '',
+        'SECRET' => '',
+        'PAGE_SIZE' => '100',
+];
