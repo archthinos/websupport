@@ -17,6 +17,4 @@ $route->add('dns/destroy','DnsController@destroy');
 $uri = (isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/');
 $url = substr($uri,1);
 
-var_dump($url);
-
 $route->run($url);
