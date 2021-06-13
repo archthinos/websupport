@@ -34,6 +34,10 @@ Podmienky kontroli premennej sa môžu reťaziť, napr.:
         'bar' => 'string|ipv4|required',
     ]
 
+# Docker 
+Pre vytvorenie docker containeru zadajte (pridané spustenie príkazu a2enmod rewrite) 
+    docker-compose up
+
 # Rozšírenie aplikácie
 * Route može podporovať premenne
 * Routes presunúť do samostantého súboru
