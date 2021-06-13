@@ -7,14 +7,7 @@ use App\Models\Dns;
 use Core\Validator;
 
 class DnsController extends \Core\Controller {
-
-    public function __construct()
-    {
-        View::render('partials/menu',[
-            'domain' => $_REQUEST['domain'],
-        ]);
-    }
-    
+   
     /**
      *  Return all DNS entries
      */ 
@@ -25,7 +18,10 @@ class DnsController extends \Core\Controller {
 
         if(isset($_REQUEST['page'])? $page= $_REQUEST['page']: $page = 1);
         $response = $dns->getDns($_REQUEST['domain'],$page);
-        
+ 
+        View::render('partials/menu',[
+            'domain' => $_REQUEST['domain'],
+        ]);
 
         View::render('dns',[
             'dns' => $response,
@@ -43,6 +39,10 @@ class DnsController extends \Core\Controller {
      */
 
     public function create(){
+
+        View::render('partials/menu',[
+            'domain' => $_REQUEST['domain'],
+        ]);
         
         View::render('forms/'.strtolower($_REQUEST['type']),[
             'domain' => $_REQUEST['domain'],
@@ -58,24 +58,23 @@ class DnsController extends \Core\Controller {
         $dns = new Dns();
 
         // validate request data
-        $data = $validator->validate($_REQUEST);
-        // remove empty array items
-        $errors = array_filter($data['errors']);  
-
+        $data = $validator->validate($_POST);
+        $response = $dns->storeDns($_REQUEST['domain'],$data);
+        
         // if no validation errors call API 
-        if(!$errors){
-            $response = $dns->storeDns($_REQUEST['domain'],$data);
-            
+        if(isset($data['errors'])){
+            // remove empty array items
+            $errors = array_filter($data['errors']);  
             $errors = $response['errors']['content'];
         }
 
         // API errors or messages
-        if($response['message']) {
+        if(isset($response['message'])) {
             $errors[] = $response['message'];
         }
 
         // generate views
-        if($errors){
+        if(isset($errors)){
             View::render('partials/error',[
                 'errors' => $errors,
             ]);
@@ -86,10 +85,7 @@ class DnsController extends \Core\Controller {
         }
 
         // Everything ok, redirect
-        if($response['status']==='success'){
-            header("Location: /dns/?domain=".$_REQUEST['domain']."&message=success");
-        }
-
+        header("Location: /dns/?domain=".$_REQUEST['domain']);
     }
 
     /**
@@ -98,12 +94,8 @@ class DnsController extends \Core\Controller {
 
     public function destroy(){
         $dns = new Dns();
-        $response = $dns->deleteDns($_REQUEST['domain'],$_REQUEST['id']);
+        $dns->deleteDns($_REQUEST['domain'],$_REQUEST['id']);
 
-        if($response['message']){
-            header("Location: /dns/?domain=".$_REQUEST['domain']."&status=error&message=".$response['message']); 
-        }
-
-        header("Location: /dns/?domain=".$_REQUEST['domain']."&status=success");
+        header("Location: /dns/?domain=".$_REQUEST['domain']);
     }
 }

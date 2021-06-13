@@ -1,6 +1,6 @@
 <?php 
 
-if($dns['message']){
+if(isset($dns['message'])){
     echo $dns['message'];
 }
 
