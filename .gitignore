@@ -1,3 +1,4 @@
-config.php
 .docker.sh
+config.php
 /vendor
+/.vscode
