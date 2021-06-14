@@ -61,6 +61,10 @@ class DnsController extends \Core\Controller {
 
         // generate views
         if($this->hasErrors($data)){
+            View::render('partials/menu',[
+                'domain' => $_REQUEST['domain'],
+            ]);
+
             View::render('partials/error',[
                 'errors' => $this->hasErrors($data),
             ]);
