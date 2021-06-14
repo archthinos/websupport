@@ -13,11 +13,8 @@ class DnsController extends \Core\Controller {
      */ 
 
     public function index(){
-
-        $dns = new Dns();
-
         if(isset($_REQUEST['page'])? $page= $_REQUEST['page']: $page = 1);
-        $response = $dns->getDns($_REQUEST['domain'],$page);
+        $response = (new Dns())->getDns($_REQUEST['domain'],$page);
  
         View::render('partials/menu',[
             'domain' => $_REQUEST['domain'],
@@ -54,29 +51,18 @@ class DnsController extends \Core\Controller {
      */
 
     public function store(){
-        $validator = new Validator();
-        $dns = new Dns();
-
         // validate request data
-        $data = $validator->validate($_POST);
-        $response = $dns->storeDns($_REQUEST['domain'],$data);
+        $data = (new Validator())->validate($_POST);
         
-        // if no validation errors call API 
-        if(isset($data['errors'])){
-            // remove empty array items
-            $errors = array_filter($data['errors']);  
-            $errors = $response['errors']['content'];
-        }
-
-        // API errors or messages
-        if(isset($response['message'])) {
-            $errors[] = $response['message'];
+        if(!$this->hasErrors($data)){
+            // call api 
+            $data = (new Dns())->storeDns($_REQUEST['domain'],$data);
         }
 
         // generate views
-        if(isset($errors)){
+        if($this->hasErrors($data)){
             View::render('partials/error',[
-                'errors' => $errors,
+                'errors' => $this->hasErrors($data),
             ]);
             View::render('forms/'.strtolower($_REQUEST['type']),[
                 'domain' => $_REQUEST['domain'],
@@ -93,9 +79,24 @@ class DnsController extends \Core\Controller {
      */
 
     public function destroy(){
-        $dns = new Dns();
-        $dns->deleteDns($_REQUEST['domain'],$_REQUEST['id']);
+        (new Dns())->deleteDns($_REQUEST['domain'],$_REQUEST['id']);
 
         header("Location: /dns/?domain=".$_REQUEST['domain']);
     }
+
+    public function hasErrors($data){
+        // validation error
+        if(isset($data['errors'])){
+            return $data['errors'];
+        }
+        // API validation error
+        if(isset($data['errors']['content'])){
+            return $data['errors']['content'];
+        }
+
+        // API messages
+        if(isset($data['message'])) {
+            return $data['message'];
+        }        
+    } 
 }
