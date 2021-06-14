@@ -4,9 +4,11 @@ namespace Core;
 
 class Route {
     protected $routes = [];
+    protected $data = [];
 
-    public function add($route, $action){
-        $this->routes[$route] = $action; 
+    public function add($route, $action, $data = []){
+        $this->routes[$route] = $action;
+        $this->data[$route] = $data;
     }
 
     public function run($url){
@@ -21,11 +23,12 @@ class Route {
         if(array_key_exists($route,$this->routes)){
             $parameter = explode('@',$this->routes[$route]);
             $method = $parameter[1];
+            
             $controller = $this->getNamespace().$parameter[0];
             
             // create new instance for controller
             if(class_exists($controller)){    
-                $controller = new $controller;
+                $controller = new $controller($this->data);
                 return $controller->$method();
             } 
             else {
